@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+  
+<body class="plain-bg">
+
+<header class="top-bar">
+  Smart Surveillance System
+</header>
+
+<div class="page-center">
+
+  <div class="form-card">
+
+    <h3 style="text-align:center;">Dashboard</h3>
+
+    <div class="card-row">
+      <div class="card yellow">
+        <b>Total Detection</b><br>Today: <span id="todayCount">0</span>
+      </div>
+
+      <div class="card green">
+        <b>High Risk Area</b><br>
+        <span id="highRiskArea">Loading...</span>
+      </div>
+    </div>
+
+    <div class="status-card">
+      Last Sync Status: Synced
+    </div>
+    <div class="btn-row">
+      <button class="event-btn" onclick="goTo('events.html')">View Event Logs &gt;
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/navigation.js"></script>
+</head>
+<script>
+const token = localStorage.getItem("token");
+if (!token) window.location = "login.html";
+
+fetch("https://smart-surveillance-system-production.up.railway.app/dashboard", {
+  headers: { Authorization: "Bearer " + token }
+})
+.then(r => r.json())
+.then(data => {
+  if (!data.success) return;
+  document.getElementById("todayCount").innerText = data.todayEvents;
+  document.getElementById("highRiskArea").innerText = data.highRiskArea;
+
+  // You can update the card text here later (optional)
+});
+</script>
+
+
+</body>
+</html>
+

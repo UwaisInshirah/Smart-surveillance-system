@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Event Logs</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/navigation.js"></script>
+</head>
+
+<body class="plain-bg">
+
+<header class="top-bar">
+  <span class="title">Smart Surveillance System</span>
+  <span class="menu-icon" onclick="toggleMenu()">☰</span>
+</header>
+
+<div id="sideMenu" class="side-menu">
+  <a href="dashboard.html">Dashboard</a>
+  <a href="events.html">Event Logs</a>
+  <a href="javascript:void(0);" onclick="logout()">Logout</a>
+</div>
+
+<div class="search-box">
+  <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchTable()">
+</div>
+
+<div class="table-box">
+  <table>
+    <thead>
+      <tr>
+        <th>Timestamp</th>
+        <th>Animal Type</th>
+        <th>Location</th>
+        <th>Proximity Level</th>
+        <th>Predicted Behaviour</th>
+        <th>Details</th>
+      </tr>
+    </thead>
+    <tbody id="eventsBody"></tbody>
+  </table>
+</div>
+
+<!-- ✅ SINGLE CLEAN SCRIPT BLOCK -->
+<script>
+const API_BASE = "https://smart-surveillance-system-production.up.railway.app";
+
+const token = localStorage.getItem("token");
+if (!token) {
+  window.location = "login.html";
+}
+
+let allEvents = [];
+
+// -----------------------------
+// Logout
+// -----------------------------
+function logout() {
+  localStorage.removeItem("token");
+  window.location.replace("index.html");
+}
+
+// -----------------------------
+// View Event Details
+// -----------------------------
+function viewEventById(eventId) {
+  window.location.href = "event_details.html?id=" + encodeURIComponent(eventId);
+}
+
+// -----------------------------
+// Render Events
+// -----------------------------
+function renderEvents(list) {
+  const body = document.getElementById("eventsBody");
+  body.innerHTML = "";
+
+  if (!list || list.length === 0) {
+    body.innerHTML = `<tr><td colspan="6">No events found</td></tr>`;
+    return;
+  }
+
+  list.forEach(e => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${e.Timestamp || ""}</td>
+      <td>${e.AnimalType || ""}</td>
+      <td>${e.Location || ""}</td>
+      <td>${e.ProximityLevel || ""}</td>
+      <td>${e.PredictedBehaviour || ""}</td>
+      <td>
+        <button class="view-btn" onclick="viewEventById('${e.EventID}')">
+          View
+        </button>
+      </td>
+    `;
+    body.appendChild(row);
+  });
+}
+
+// -----------------------------
+// Search Function
+// -----------------------------
+function searchTable() {
+  const q = document.getElementById("searchInput")
+                    .value
+                    .toLowerCase()
+                    .trim();
+
+  if (!q) {
+    renderEvents(allEvents);
+    return;
+  }
+
+  const filtered = allEvents.filter(e =>
+    `${e.Timestamp} ${e.AnimalType} ${e.Location} ${e.ProximityLevel} ${e.PredictedBehaviour}`
+      .toLowerCase()
+      .includes(q)
+  );
+
+  renderEvents(filtered);
+}
+
+// -----------------------------
+// Fetch Events from Backend
+// -----------------------------
+fetch(`${API_BASE}/events`, {
+  headers: {
+    Authorization: "Bearer " + token
+  }
+})
+.then(response => response.json())
+.then(data => {
+  if (!Array.isArray(data)) {
+    alert(data.message || "Failed to load events");
+    return;
+  }
+
+  allEvents = data;
+  renderEvents(allEvents);
+})
+.catch(error => {
+  console.error("Error:", error);
+  alert("Backend not reachable / CORS issue");
+});
+</script>
+
+</body>
+</html>

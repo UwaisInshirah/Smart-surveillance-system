@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/navigation.js"></script>
+</head>
+
+<body class="plain-bg">
+
+<header class="top-bar">
+  Smart Surveillance System
+</header>
+
+<h3 class="center-title">Create a new account</h3>
+
+<div class="page-center">
+  <div class="form-card">
+
+    <input type="text" id="name" placeholder="Full Name">
+    <span id="nameError" class="error-text"></span>
+
+    <input type="text" id="email" placeholder="Email Address">
+    <span id="emailError" class="error-text"></span>
+
+    <input type="password" id="password" placeholder="Password">
+    <span id="passError" class="error-text"></span>
+
+    <div class="btn-row">
+      <button class="cancel-btn" onclick="goTo('index.html')">Cancel</button>
+      <button class="register-btn" id="registerBtn">Register</button>
+    </div>
+
+    <p class="small-text" onclick="goTo('login.html')">
+      Already have an account? Login
+    </p>
+  </div>
+
+</div>
+
+<script>
+const nameField = document.getElementById("name");
+const emailField = document.getElementById("email");
+const passField = document.getElementById("password");
+
+const nameError = document.getElementById("nameError");
+const emailError = document.getElementById("emailError");
+const passError = document.getElementById("passError");
+
+const btn = document.getElementById("registerBtn");
+
+btn.onclick = function (e) {
+  e.preventDefault();
+
+  nameError.innerText = "";
+  emailError.innerText = "";
+  passError.innerText = "";
+
+  let valid = true;
+
+  if (nameField.value.trim() === "") {
+    nameError.innerText = "Full Name is required.";
+    valid = false;
+  }
+
+  if (emailField.value.trim() === "") {
+    emailError.innerText = "Email is required.";
+    valid = false;
+  } 
+  else if (!emailField.value.includes("@")) {
+    emailError.innerText = "Email must contain '@'.";
+    valid = false;
+  }
+
+  
+  const password = passField.value;
+
+const passwordPattern =
+/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+
+if (password === "") {
+  passError.innerText = "Password is required.";
+  valid = false;
+}
+else if (!passwordPattern.test(password)) {
+  passError.innerText =
+  "Password must be at least 8 characters and include uppercase, lowercase, number and special character.";
+  valid = false;
+}
+
+
+  // If all valid
+  // If all valid
+if (valid) {
+
+  fetch("https://smart-surveillance-system-production.up.railway.app/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: nameField.value.trim(),
+      email: emailField.value.trim(),
+      password: passField.value
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+
+    if (data.error) {
+      emailError.innerText = data.error;
+      return;
+    }
+
+    alert(data.message || "Successfully Registered!");
+    goTo("login.html");
+
+  })
+  .catch(() => {
+    alert("Backend not reachable. Please run Flask server.");
+  });
+
+}
+
+};
+</script>
+
+</body>
+</html>
+
+

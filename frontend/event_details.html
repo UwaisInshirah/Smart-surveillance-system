@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Event Details</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="plain-bg">
+
+<header class="top-bar">
+  <span class="title">Smart Surveillance System</span>
+  <span class="menu-icon" onclick="toggleMenu()">☰</span>
+</header>
+
+<div id="sideMenu" class="side-menu">
+  <a href="dashboard.html">Dashboard</a>
+  <a href="events.html">Event Logs</a>
+  <a href="javascript:void(0);" onclick="logout()">Logout</a>
+</div>
+
+<h2 class="center-title">Event Details</h2>
+
+<div class="details-box">
+  <div class="details-text">
+    <p id="eid"></p>
+    <p id="edate"></p>
+    <p id="eanimal"></p>
+    <p id="elocation"></p>
+    <p id="edistance"></p>
+    <p id="eproximity"></p>
+    <p id="ebehavior"></p>
+    
+  </div>
+
+  <img id="eventImage" src="" alt="Animal Image">
+</div>
+
+<script>
+function toggleMenu() {
+  const menu = document.getElementById("sideMenu");
+  menu.style.display = (menu.style.display === "block") ? "none" : "block";
+}
+
+function logout() {
+  localStorage.removeItem("token");
+  window.location = "login.html";
+}
+
+const token = localStorage.getItem("token");
+if (!token) window.location = "login.html";
+
+// Get id from URL: event_details.html?id=4012
+const id = new URLSearchParams(window.location.search).get("id");
+if (!id) {
+  alert("Missing event id!");
+  window.location = "events.html";
+}
+
+// Load event details by id from API
+fetch("https://smart-surveillance-system-production.up.railway.app/events/" + encodeURIComponent(id), {
+  headers: { Authorization: "Bearer " + token }
+})
+.then(res => res.json())
+.then(data => {
+  if (!data.success || !data.event) {
+    alert(data.message || "Event not found!");
+    window.location = "events.html";
+    return;
+  }
+
+  const e = data.event;
+
+  document.getElementById("eid").innerText = "Event ID : " + (e.EventID ?? "");
+  document.getElementById("edate").innerText = "TimeStamp : " + (e.Timestamp ?? "");
+  document.getElementById("eanimal").innerText = "Animal : " + (e.AnimalType ?? "");
+  document.getElementById("elocation").innerText = "Location : " + (e.Location ?? "");
+  document.getElementById("edistance").innerText = "Distance : " + (e.Distance ?? "");
+  document.getElementById("eproximity").innerText ="Proximity Level : " + (e.ProximityLevel ?? "");
+  document.getElementById("ebehavior").innerText = "Behavior : " + (e.PredictedBehaviour ?? "");
+
+  if (e.Snapshot) {
+    document.getElementById("eventImage").src = "https://smart-surveillance-system-production.up.railway.app" + e.Snapshot;
+  } else {
+    // optional fallback image
+    document.getElementById("eventImage").src = "https://smart-surveillance-system-production.up.railway.app/static/";
+  }
+})
+.catch(err => {
+  console.error(err);
+  alert("Backend not reachable. Please make sure Flask server is running.");
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/navigation.js"></script>
+</head>
+
+<body class="plain-bg">
+
+<header class="top-bar">
+  Smart Surveillance System
+</header>
+
+<div class="page-center">
+  <div class="form-card">
+    <h3>Login</h3>
+    <input type="email" id="user" placeholder="Email">
+    <span id="emailError" class="error-text"></span>
+
+    <input type="password" id="pass" placeholder="Password">
+    <span id="passError" class="error-text"></span>
+
+    <button id="loginBtn" class="login-btn">Login</button>
+
+    <p class="small-text" onclick="goTo('register.html')">
+      Don't have an account? Register
+    </p>
+  </div>
+
+
+</div>
+
+<script>
+const user = document.getElementById("user");
+const pass = document.getElementById("pass");
+const emailError = document.getElementById("emailError");
+const passError = document.getElementById("passError");
+const btn = document.getElementById("loginBtn");
+
+btn.onclick = function () {
+
+  emailError.innerText = "";
+  passError.innerText = "";
+
+  let valid = true;
+
+  // Email validation
+  if (!user.value.includes("@")) {
+    emailError.innerText = "Please enter a valid email.";
+    valid = false;
+  }
+
+  // Password validation
+  const password = pass.value;
+  const passwordPattern =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+
+  if (!passwordPattern.test(password)) {
+    passError.innerText =
+      "Password must contain uppercase, lowercase, number and special character.";
+    valid = false;
+  }
+
+  if (!valid) return;
+
+  fetch("https://smart-surveillance-system-production.up.railway.app/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      email: user.value.trim(),
+      password: pass.value
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+
+    console.log("Login Response:", data); // 🔍 Debug
+
+    if (data.token) {
+
+      // ✅ Save JWT token
+      localStorage.setItem("token", data.token);
+
+      console.log("Saved Token:", localStorage.getItem("token"));
+
+      alert("Login successful!");
+
+      // Redirect to dashboard
+      window.location.href = "dashboard.html";
+
+    } else {
+
+      passError.innerText = data.message || "Invalid email or password";
+
+    }
+
+  })
+  .catch(error => {
+    console.error("Login Error:", error);
+    alert("Server connection error");
+  });
+
+};
+</script>
+
+</body>
+</html>
