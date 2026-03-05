@@ -22,8 +22,7 @@
       </div>
 
       <div class="card green">
-        <b>High Risk Area</b><br>
-        <span id="highRiskArea">Loading...</span>
+        <b>High Risk Area</b><br>Hunnasgiriya
       </div>
     </div>
 
@@ -51,8 +50,6 @@ fetch("https://smart-surveillance-system-production.up.railway.app/dashboard", {
 .then(data => {
   if (!data.success) return;
   document.getElementById("todayCount").innerText = data.todayEvents;
-  document.getElementById("highRiskArea").innerText = data.highRiskArea;
-
   // You can update the card text here later (optional)
 });
 </script>

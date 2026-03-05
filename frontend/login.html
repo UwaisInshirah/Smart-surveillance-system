@@ -45,64 +45,51 @@ btn.onclick = function () {
 
   let valid = true;
 
-  // Email validation
   if (!user.value.includes("@")) {
-    emailError.innerText = "Please enter a valid email.";
+    emailError.innerText = "Please include an '@' in the email address.";
     valid = false;
   }
 
-  // Password validation
   const password = pass.value;
   const passwordPattern =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
   if (!passwordPattern.test(password)) {
     passError.innerText =
-      "Password must contain uppercase, lowercase, number and special character.";
+      "Password must be at least 8 characters and include uppercase, lowercase, number and special character.";
     valid = false;
   }
 
-  if (!valid) return;
+  if (valid) {
 
-  fetch("https://smart-surveillance-system-production.up.railway.app/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      email: user.value.trim(),
-      password: pass.value
+    fetch("https://smart-surveillance-system-production.up.railway.app/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: user.value.trim(),
+        password: pass.value
+      })
     })
-  })
-  .then(response => response.json())
-  .then(data => {
+    .then(res => res.json())
+    .then(data => {
 
-    console.log("Login Response:", data); // 🔍 Debug
+      // 🔥 Flask returns message + token
+      if (!data.token) {
+        passError.innerText = data.message || "Invalid email or password";
+        return;
+      }
 
-    if (data.token) {
-
-      // ✅ Save JWT token
+      // Save JWT token
       localStorage.setItem("token", data.token);
 
-      console.log("Saved Token:", localStorage.getItem("token"));
-
       alert("Login successful!");
+      goTo("dashboard.html");
+    })
+    .catch(() => {
+      alert("Backend not reachable. Please run Flask server.");
+    });
 
-      // Redirect to dashboard
-      window.location.href = "dashboard.html";
-
-    } else {
-
-      passError.innerText = data.message || "Invalid email or password";
-
-    }
-
-  })
-  .catch(error => {
-    console.error("Login Error:", error);
-    alert("Server connection error");
-  });
-
+  }
 };
 </script>
 

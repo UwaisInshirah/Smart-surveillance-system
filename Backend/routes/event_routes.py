@@ -111,25 +111,17 @@ def load_dummy_events():
 # 2️⃣ Fetch Events
 # ---------------------------------------
 @event_bp.route("/events", methods=["GET"])
-@token_required
 def get_events():
     try:
         conn = get_db_connection()
-        cur = conn.cursor(dictionary=True)  # ✅ IMPORTANT
-        cur.execute("""
-            SELECT 
-              EventID,
-              DATE_FORMAT(Timestamp, '%Y-%m-%d %H:%i:%s') AS Timestamp,
-              AnimalType,
-              Location,
-              ProximityLevel,
-              PredictedBehaviour
-            FROM DetectionEvent
-            ORDER BY Timestamp DESC
-        """)
+        cur = conn.cursor()
+
+        cur.execute("SELECT * FROM DetectionEvent ORDER BY Timestamp DESC")
         events = cur.fetchall()
+
         cur.close()
         conn.close()
+
         return jsonify(events), 200
 
     except Exception as e:
@@ -200,35 +192,20 @@ def dashboard():
         conn = get_db_connection()
         cur = conn.cursor()
 
-        # Today count
         cur.execute("""
-            SELECT COUNT(*) AS todayCount
-            FROM DetectionEvent
+            SELECT COUNT(*) AS todayCount 
+            FROM DetectionEvent 
             WHERE DATE(Timestamp) = CURDATE()
         """)
-        result = cur.fetchone()
 
-        # ✅ Most repeated (high risk) location
-        cur.execute("""
-            SELECT Location, COUNT(*) AS cnt
-            FROM DetectionEvent
-            GROUP BY Location
-            ORDER BY cnt DESC
-            LIMIT 1
-        """)
-        top = cur.fetchone()
+        result = cur.fetchone()
 
         cur.close()
         conn.close()
 
-        high_risk_area = "N/A"
-        if top:
-            high_risk_area = top["Location"]
-
         return jsonify({
             "success": True,
-            "todayEvents": result["todayCount"],
-            "highRiskArea": high_risk_area
+            "todayEvents": result["todayCount"]
         }), 200
 
     except Exception as e:
