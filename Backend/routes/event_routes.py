@@ -2,15 +2,17 @@ import jwt
 from flask import Blueprint, jsonify, request, current_app
 from functools import wraps
 from database import get_db_connection
+import cloudinary
+import cloudinary.uploader
 import os
 
-event_bp = Blueprint("events", __name__)
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET")
+)
 
-# ---------------------------
-# IMAGE UPLOAD CONFIG
-# ---------------------------
-UPLOAD_FOLDER = "static/uploads"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+event_bp = Blueprint("events", __name__)
 
 # ---------------------------------------
 # 6️⃣ Upload Image From Raspberry Pi
@@ -23,13 +25,18 @@ def upload_image():
     if not image:
         return jsonify({"message": "No image provided"}), 400
 
-    image_path = os.path.join(UPLOAD_FOLDER, image.filename)
-    image.save(image_path)
+    try:
+        upload_result = cloudinary.uploader.upload(image)
 
-    return jsonify({
-        "message": "Image uploaded successfully",
-        "path": "/static/uploads/" + image.filename
-    }), 200
+        image_url = upload_result["secure_url"]
+
+        return jsonify({
+            "message": "Image uploaded successfully",
+            "image_url": image_url
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # ---------------------------------------
 # TOKEN REQUIRED DECORATOR
