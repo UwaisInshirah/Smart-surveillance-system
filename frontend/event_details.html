@@ -79,11 +79,11 @@ fetch("https://smart-surveillance-system-production.up.railway.app/events/" + en
   document.getElementById("ebehavior").innerText = "Behavior : " + (e.PredictedBehaviour ?? "");
 
   if (e.Snapshot) {
-    document.getElementById("eventImage").src = "https://smart-surveillance-system-production.up.railway.app" + e.Snapshot;
-  } else {
-    // optional fallback image
-    document.getElementById("eventImage").src = "https://smart-surveillance-system-production.up.railway.app/static/";
-  }
+  document.getElementById("eventImage").src = e.Snapshot;
+} else {
+  document.getElementById("eventImage").src = "images/no-image.png";
+}
+
 })
 .catch(err => {
   console.error(err);
