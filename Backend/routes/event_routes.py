@@ -211,20 +211,35 @@ def dashboard():
         conn = get_db_connection()
         cur = conn.cursor()
 
+        # Today detection count
         cur.execute("""
-            SELECT COUNT(*) AS todayCount 
-            FROM DetectionEvent 
+            SELECT COUNT(*) AS todayCount
+            FROM DetectionEvent
             WHERE DATE(Timestamp) = CURDATE()
         """)
-
         result = cur.fetchone()
+
+        # High risk area (most frequent location)
+        cur.execute("""
+            SELECT Location, COUNT(*) AS cnt
+            FROM DetectionEvent
+            GROUP BY Location
+            ORDER BY cnt DESC
+            LIMIT 1
+        """)
+        top = cur.fetchone()
 
         cur.close()
         conn.close()
 
+        high_risk_area = "N/A"
+        if top:
+            high_risk_area = top["Location"]
+
         return jsonify({
             "success": True,
-            "todayEvents": result["todayCount"]
+            "todayEvents": result["todayCount"],
+            "highRiskArea": high_risk_area
         }), 200
 
     except Exception as e:
