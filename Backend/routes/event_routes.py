@@ -122,7 +122,7 @@ def load_dummy_events():
 def get_events():
     try:
         conn = get_db_connection()
-        cur = conn.cursor(dictionary=True)
+        cur = conn.cursor()
 
         cur.execute("""
             SELECT
