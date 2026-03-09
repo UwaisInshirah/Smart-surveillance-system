@@ -122,9 +122,20 @@ def load_dummy_events():
 def get_events():
     try:
         conn = get_db_connection()
-        cur = conn.cursor()
+        cur = conn.cursor(dictionary=True)
 
-        cur.execute("SELECT * FROM DetectionEvent ORDER BY Timestamp DESC")
+        cur.execute("""
+            SELECT
+                EventID,
+                Timestamp,
+                AnimalType,
+                Location,
+                ProximityLevel,
+                PredictedBehaviour
+            FROM DetectionEvent
+            ORDER BY Timestamp DESC
+        """)
+
         events = cur.fetchall()
 
         cur.close()

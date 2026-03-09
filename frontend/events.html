@@ -41,6 +41,8 @@
 const token = localStorage.getItem("token");
 if (!token) window.location = "login.html";
 
+let allEvents = [];
+
 function viewEventById(eventId) {
   window.location.href = "event_details.html?id=" + encodeURIComponent(eventId);
 }
@@ -52,6 +54,7 @@ fetch("https://smart-surveillance-system-production.up.railway.app/events", {
 })
 .then(response => response.json())
 .then(events => {
+  allEvents = events;
 
   const body = document.getElementById("eventsBody");
   body.innerHTML = "";
@@ -81,6 +84,52 @@ fetch("https://smart-surveillance-system-production.up.railway.app/events", {
   console.error(err);
   alert("Cannot connect to backend server. Check your internet connection or try again later.");
 });
+
+function searchTable() {
+
+  const query = document.getElementById("searchInput").value.toLowerCase();
+
+  const filtered = allEvents.filter(e => {
+
+    return (
+      (e.EventID && String(e.EventID).toLowerCase().includes(query)) ||
+      (e.Timestamp && e.Timestamp.toLowerCase().includes(query)) ||
+      (e.AnimalType && e.AnimalType.toLowerCase().includes(query)) ||
+      (e.Location && e.Location.toLowerCase().includes(query)) ||
+      (e.ProximityLevel && e.ProximityLevel.toLowerCase().includes(query)) ||
+      (e.PredictedBehaviour && e.PredictedBehaviour.toLowerCase().includes(query))
+    );
+
+  });
+
+  const body = document.getElementById("eventsBody");
+  body.innerHTML = "";
+
+  if (filtered.length === 0) {
+    body.innerHTML = `<tr><td colspan="6">No events found</td></tr>`;
+    return;
+  }
+
+  filtered.forEach(e => {
+
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td>${e.Timestamp ?? ""}</td>
+      <td>${e.AnimalType ?? ""}</td>
+      <td>${e.Location ?? ""}</td>
+      <td>${e.ProximityLevel ?? ""}</td>
+      <td>${e.PredictedBehaviour ?? ""}</td>
+      <td>
+        <button class="view-btn" onclick="viewEventById('${e.EventID ?? ""}')">View</button>
+      </td>
+    `;
+
+    body.appendChild(row);
+
+  });
+
+}
 </script>
 <script>
 function logout() {
