@@ -96,14 +96,6 @@ input {
 .yellow { background: #fff3cd; }
 .green { background: #d4edda; }
 
-.status-card {
-  background: #f8c8c8;
-  width: 250px;
-  margin: 20px auto;
-  padding: 10px;
-  text-align: center;
-}
-
 .event-btn {
   display: block;
   margin: auto;
