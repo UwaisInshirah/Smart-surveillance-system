@@ -118,7 +118,6 @@ def load_dummy_events():
 # 2️⃣ Fetch Events
 # ---------------------------------------
 @event_bp.route("/events", methods=["GET"])
-@token_required
 def get_events():
     try:
         conn = get_db_connection()
