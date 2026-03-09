@@ -81,13 +81,13 @@ fetch("https://smart-surveillance-system-production.up.railway.app/events/" + en
   if (e.Snapshot) {
   document.getElementById("eventImage").src = e.Snapshot;
 } else {
-  document.getElementById("eventImage").src = "images/no-image.png";
+  document.getElementById("eventImage").src = "images/no-image.jpeg";
 }
 
 })
 .catch(err => {
   console.error(err);
-  alert("Backend not reachable. Please make sure Flask server is running.");
+  alert("Cannot connect to backend server. Check your internet connection or try again later.");
 });
 </script>
 

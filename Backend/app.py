@@ -17,7 +17,7 @@ app.register_blueprint(event_bp)
 
 @app.route("/")
 def home():
-    return {"message": "Flask backend running successfully"}
+    return {"message": "Backend running successfully"}
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
