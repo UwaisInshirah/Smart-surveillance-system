@@ -203,6 +203,7 @@ th, td {
 
 .form-card{
   width: 520px;
+  min-height: 600px;
   background: #ffffff;
   border-radius: 12px;
   padding: 40px;
@@ -222,4 +223,54 @@ th, td {
   cursor: pointer;
   border-radius: 6px;
 }
+.app-logo{
+  width:250px;
+  display:block;
+  margin:15px auto 25px auto;
+}
 
+.nav-logo{
+  height:30px;
+  margin-right:8px;
+}
+
+.logo-area{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.welcome-box h2{
+  font-size:36px;
+  font-weight:bold;
+}
+
+.welcome-box p{
+  font-size:22px;
+  font-weight:bold;
+}
+.side-menu{
+  display:none;
+  position:absolute;
+  right:10px;
+  top:55px;
+  background:white;
+  border:1px solid #ccc;
+  box-shadow:0 4px 8px rgba(0,0,0,0.2);
+  width:180px;
+}
+
+.side-menu a{
+  display:block;
+  padding:10px;
+  text-decoration:none;
+  color:black;
+  border-bottom:1px solid #eee;
+}
+
+.side-menu a:hover{
+  background:#f1f1f1;
+}
+.show-menu{
+  display:block;
+}

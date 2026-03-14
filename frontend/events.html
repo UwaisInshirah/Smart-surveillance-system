@@ -9,7 +9,7 @@
 <body class="plain-bg">
 
 <header class="top-bar">
-  <span class="title">Smart Surveillance System</span>
+  <span class="title">ANIMEX</span>
   <span class="menu-icon" onclick="toggleMenu()">☰</span>
 </header>
 
@@ -135,6 +135,10 @@ function searchTable() {
 function logout() {
   localStorage.removeItem("token");
   window.location.replace("index.html");
+}
+function toggleMenu() {
+  const menu = document.getElementById("sideMenu");
+  menu.classList.toggle("show-menu");
 }
 </script>
 </body>
